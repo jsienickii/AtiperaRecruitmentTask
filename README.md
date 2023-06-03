@@ -47,7 +47,6 @@ The API will respond with a JSON object containing the following information for
         }
       ]
     },
-    ...
 ```
 ### User Not Found (404)
 If the requested GitHub user does not exist, the API will respond with a 404 status code and the following JSON object:

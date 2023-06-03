@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
-import pl.sienicki.atipera.exception.CustomExceptionResponse;
+import pl.sienicki.atipera.dto.CustomExceptionResponse;
 
 import static org.junit.jupiter.api.Assertions.*;
 

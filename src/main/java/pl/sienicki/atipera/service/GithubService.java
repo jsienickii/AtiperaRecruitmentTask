@@ -4,43 +4,39 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.sienicki.atipera.client.GithubClient;
 import pl.sienicki.atipera.dto.Branch;
-import pl.sienicki.atipera.dto.GitRepositoriesWithBranches;
-import pl.sienicki.atipera.dto.GitRepository;
-import pl.sienicki.atipera.dto.RepositoriesWithBranchesAndLastCommitByUsername;
+import pl.sienicki.atipera.dto.GitNonForkRepos;
+import pl.sienicki.atipera.dto.GitRepos;
+import pl.sienicki.atipera.dto.GitReposWithBranches;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class GithubService {
+
     private final GithubClient githubClient;
 
-    public RepositoriesWithBranchesAndLastCommitByUsername getRepositoriesWithBranchAndLastCommit(String username, List<GitRepository> repositoriesByUsername) {
+    public GitNonForkRepos getAllNonForkRepos(String username) {
+        List<GitRepos> repositoriesByUsername = githubClient.getRepositoriesByUsername(username);
         return buildResponse(username, filterRepositoriesAndGetBranchesFromClient(username, repositoriesByUsername));
     }
 
-    private static RepositoriesWithBranchesAndLastCommitByUsername buildResponse(String username, List<GitRepositoriesWithBranches> gitRepositoriesWithoutForksWithBranchesList) {
-        return RepositoriesWithBranchesAndLastCommitByUsername.builder()
-                .ownerLogin(username)
-                .repositories(gitRepositoriesWithoutForksWithBranchesList)
-                .build();
+    private static GitNonForkRepos buildResponse(String username, List<GitReposWithBranches> gitRepositoriesWithoutForksWithBranchesList) {
+        return new GitNonForkRepos(username, gitRepositoriesWithoutForksWithBranchesList);
     }
 
-    private List<GitRepositoriesWithBranches> filterRepositoriesAndGetBranchesFromClient(String username, List<GitRepository> repositoriesByUsername) {
+    private List<GitReposWithBranches> filterRepositoriesAndGetBranchesFromClient(String username, List<GitRepos> repositoriesByUsername) {
         return repositoriesByUsername.stream()
                 .filter(repo -> repo.forks_count() == 0)
-                .map(repo -> mapToGitRepositoriesWithBranches(getBranchesAndCommitsByUsernameAndRepositoryFromClient(username, repo.name()), repo))
+                .map(repo -> mapToGitRepositoriesWithBranches(getBranchesFromGithub(username, repo.name()), repo))
                 .toList();
     }
 
-    private GitRepositoriesWithBranches mapToGitRepositoriesWithBranches(List<Branch> branchesByUsernameAndRepository, GitRepository repo) {
-        return GitRepositoriesWithBranches.builder()
-                .repositoryName(repo.name())
-                .branches(branchesByUsernameAndRepository)
-                .build();
+    private GitReposWithBranches mapToGitRepositoriesWithBranches(List<Branch> branchesByUsernameAndRepository, GitRepos repo) {
+        return new GitReposWithBranches(repo.name(), branchesByUsernameAndRepository);
     }
 
-    private List<Branch> getBranchesAndCommitsByUsernameAndRepositoryFromClient(String username, String repo) {
+    private List<Branch> getBranchesFromGithub(String username, String repo) {
         return githubClient.getBranchesByUsernameAndRepository(username, repo);
     }
 }
