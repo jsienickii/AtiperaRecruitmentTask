@@ -7,8 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import pl.sienicki.atipera.config.AcceptHeaderInterceptor;
@@ -51,6 +49,7 @@ public class UserControllerTest {
 
     @Test
     public void getOwnerLoginAndRepositoriesWithBranchesAndLastCommitByUsername() throws Exception {
+        //given
         String username = "john";
         Commit commitOne = new Commit("12315");
         Commit commitTwo = new Commit("1231512412245");
@@ -62,9 +61,9 @@ public class UserControllerTest {
         repositories.add(gitRepositoriesWithBranchesOne);
         repositories.add(gitRepositoriesWithBranchesTwo);
         GitNonForkRepos response = new GitNonForkRepos(username, repositories);
-
+        //when
         given(githubService.getAllNonForkRepos(username)).willReturn(response);
-
+        //then
         mockMvc.perform(get("/" + username)
                         .header("Accept", "application/json"))
                 .andExpect(status().isOk())
@@ -80,11 +79,12 @@ public class UserControllerTest {
         String username = "john";
 
         mockMvc.perform(get("/" + username)
-                .header("Accept", "application/xml"))
+                        .header("Accept", "application/xml"))
                 .andExpect(status().isNotAcceptable())
                 .andExpect(jsonPath("$.status").value(406))
                 .andExpect(jsonPath("$.message").value("The requested header: Accept:'application/xml' is not acceptable."));
     }
+
     @Test
     void testGetReposByUsernameThrowsFeignExceptionNotFound() throws Exception {
         String username = "john";

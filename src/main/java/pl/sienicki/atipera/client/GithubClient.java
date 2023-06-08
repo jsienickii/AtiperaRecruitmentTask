@@ -9,7 +9,6 @@ import pl.sienicki.atipera.dto.GitRepos;
 import java.util.List;
 
 @FeignClient(name = "githubClient",url = "${client.api.baseUrl}")
-
 public interface GithubClient {
     @GetMapping(value = "/users/{username}/repos")
     List<GitRepos> getRepositoriesByUsername(@PathVariable String username);

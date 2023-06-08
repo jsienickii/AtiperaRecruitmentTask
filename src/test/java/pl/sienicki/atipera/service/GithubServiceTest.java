@@ -6,19 +6,17 @@ import org.mockito.MockitoAnnotations;
 import pl.sienicki.atipera.client.GithubClient;
 import pl.sienicki.atipera.dto.Branch;
 import pl.sienicki.atipera.dto.Commit;
-import pl.sienicki.atipera.dto.GitReposWithBranches;
-import pl.sienicki.atipera.dto.GitRepos;
-import pl.sienicki.atipera.dto.Owner;
 import pl.sienicki.atipera.dto.GitNonForkRepos;
+import pl.sienicki.atipera.dto.GitRepos;
+import pl.sienicki.atipera.dto.GitReposWithBranches;
+import pl.sienicki.atipera.dto.Owner;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 class GithubServiceTest {
@@ -41,11 +39,9 @@ class GithubServiceTest {
         Branch branchTwo = new Branch("Master", commitTwo);
         GitRepos gitRepositoryWithoutForks = new GitRepos("Repo1", ownerJohn, 0);
         GitRepos repositoryWithFork = new GitRepos("Repo2", ownerJohn, 4);
-        List<GitRepos> gitRepositoryList = List.of(gitRepositoryWithoutForks,repositoryWithFork);
+        List<GitRepos> gitRepositoryList = List.of(gitRepositoryWithoutForks, repositoryWithFork);
         when(githubClient.getRepositoriesByUsername(username)).thenReturn(gitRepositoryList);
         when(githubClient.getBranchesByUsernameAndRepository(eq(username), eq("Repo1")))
-                .thenReturn(List.of(branchOne, branchTwo));
-        when(githubClient.getBranchesByUsernameAndRepository(eq(username), eq("Repo2")))
                 .thenReturn(List.of(branchOne, branchTwo));
 
         // when

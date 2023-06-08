@@ -12,7 +12,6 @@ import pl.sienicki.atipera.dto.CustomExceptionResponse;
 @ControllerAdvice
 public class CustomExceptionHandler {
 
-
     @ExceptionHandler(FeignException.NotFound.class)
     public ResponseEntity<Object> handleFeignExceptionNotFound(FeignException.NotFound ex) {
         String message = "User not found";

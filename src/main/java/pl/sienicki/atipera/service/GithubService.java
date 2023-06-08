@@ -17,16 +17,11 @@ public class GithubService {
     private final GithubClient githubClient;
 
     public GitNonForkRepos getAllNonForkRepos(String username) {
-        List<GitRepos> repositoriesByUsername = githubClient.getRepositoriesByUsername(username);
-        return buildResponse(username, filterRepositoriesAndGetBranchesFromClient(username, repositoriesByUsername));
+        return new GitNonForkRepos(username, getNonForkReposWithBranchesAndCommit(username));
     }
 
-    private static GitNonForkRepos buildResponse(String username, List<GitReposWithBranches> gitRepositoriesWithoutForksWithBranchesList) {
-        return new GitNonForkRepos(username, gitRepositoriesWithoutForksWithBranchesList);
-    }
-
-    private List<GitReposWithBranches> filterRepositoriesAndGetBranchesFromClient(String username, List<GitRepos> repositoriesByUsername) {
-        return repositoriesByUsername.stream()
+    private List<GitReposWithBranches> getNonForkReposWithBranchesAndCommit(String username) {
+        return githubClient.getRepositoriesByUsername(username).stream()
                 .filter(repo -> repo.forks_count() == 0)
                 .map(repo -> mapToGitRepositoriesWithBranches(getBranchesFromGithub(username, repo.name()), repo))
                 .toList();
